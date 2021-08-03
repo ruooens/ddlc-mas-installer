@@ -1,5 +1,4 @@
-install ddlc with monika after story in just one command
-
-```sh
-$ sh -c "$(curl -sL https://ruooens.github.io/ddlc-mast-installer/install.sh)"
+Clone this repository and run the following:
+```shell
+$ ./install.sh
 ```
