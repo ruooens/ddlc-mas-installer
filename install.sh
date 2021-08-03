@@ -20,13 +20,13 @@ Optional parameters:
 EOF
             exit
             ;;
-        "-m"|"--mac")
+        "-M"|"--mac")
             mac=1
             ;;
         "--accept-terms")
             accept=1
             ;;
-        "--mod-only")
+        "-m"|"--mod-only")
             modonly=1
             ;;
         -*)
