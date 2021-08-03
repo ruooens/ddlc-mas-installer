@@ -99,12 +99,12 @@ EOF
 
     if [ -e "$target" ]; then
         _target="$target"
-        target="$(mktemp -p "$(dirname "$target")" "$(basename "$target")-XXXXXX")"
+        target="$(mktemp -u -p "$(dirname "$target")" "$(basename "$target")-XXXXXX")"
         echo "Note: $_target already exists, installing DDLC to $target."
         unset _target
     fi
 
-    printf "%s\n\n" "Downloading and unpacking DDLC..."
+    printf "%s\n" "Downloading and unpacking DDLC..."
     set -e
     id="$(curl -sL "$(curl -sL -H "Content-Type: application/x-www-form-urlencoded" -d "" https://teamsalvato.itch.io/ddlc/download_url | perl -lne 'if (/"url":"(.+?)"/) { $u = $1; $u =~ s/\\\//\//g; print $u }')" | perl -lne '$in = join("", <STDIN>); while ($in =~ /<a[^\/]*data-upload_id="(.+?)".*?<\/a>/g) { print $1 }')"
 
@@ -130,13 +130,18 @@ EOF
     curl -L "$(curl -sL -H "Content-Type: application/x-www-form-urlencoded" -d "" "https://teamsalvato.itch.io/ddlc/file/$cid" | perl -lne 'if (/"url":"(.+?)"/) { $u = $1; $u =~ s/\\\//\//g; print $u }')" -o "$target.tmp"
     unzip -o -q "$target.tmp" -d "$target"
     rm "$target.tmp"
-    nested="$(find "$target" -mindepth 1 -maxdepth 1 -type d)"
-    mv "$nested" "$target.tmp"
-    rm -d "$target"
-    mv "$target.tmp" "$target"
+    if [ -z "$mac" ]; then
+        nested="$(find "$target" -mindepth 1 -maxdepth 1 -type d)"
+        mv "$nested" "$target.tmp"
+        rm -d "$target"
+        mv "$target.tmp" "$target"
+        echo
+        echo "Installed DDLC v$(echo "$nested" | perl -ne 'print $1 if /-(\d+(\.\d+(\.\d+(\.\d+)?)?)?)-.*$/')."
+    else
+        echo "Installed DDLC v$(echo "$target/Contents/Info.plist" | perl -lne 'print $1 if /<string>(\d+(\.\d+(\.\d+(\.\d+)?)?)?)<\/string>/' Monika\ After\ Story/DDLC.app/Contents/Info.plist | head -n 2 | tail -n 1)."
+        target="$target/DDLC.app/Contents/Resources/autorun"
+    fi
 
-    echo
-    echo "Installed DDLC v$(echo "$nested" | perl -ne 'print $1 if /-(\d+(\.\d+(\.\d+(\.\d+)?)?)?)-.*$/')."
     unset nested
 fi
 
@@ -149,14 +154,11 @@ if [ ! -d "$target" ]; then
     exit 2
 fi
 
-printf "%s\n\n" "Downloading and installing Monika After Story mod..."
+printf "%s\n" "Downloading and installing Monika After Story mod..."
 mas_url="$(curl -sL https://api.github.com/repos/monika-after-story/monikamoddev/releases/latest | perl -lne 'print $1 if /"browser_download_url": "(.+?-Mod\.zip)"/')"
 curl -L "$mas_url" -o "$target.tmp"
 unzip -o -q "$target.tmp" -d "$target/game"
 rm "$target.tmp"
-
-echo
 echo "Installed Monika After Story v$(echo "$mas_url" | perl -ne 'print $1 if /-(\d+(\.\d+(\.\d+(\.\d+)?)?)?)-Mod.zip$/')."
-printf "\n%s\n" "Done."
 
 trap - EXIT
