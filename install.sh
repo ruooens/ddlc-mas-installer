@@ -121,7 +121,7 @@ EOF
         unset _target
     fi
 
-    printf "%s\n" "- Downloading and unpacking DDLC..."
+    printf "%s\n" "Downloading and unpacking DDLC..."
     set -e
     id="$(curl -sL "$(curl -sL -H "Content-Type: application/x-www-form-urlencoded" -d "" https://teamsalvato.itch.io/ddlc/download_url | perl -lne 'if (/"url":"(.+?)"/) { $u = $1; $u =~ s/\\\//\//g; print $u }')" | perl -lne '$in = join("", <STDIN>); while ($in =~ /<a[^\/]*data-upload_id="(.+?)".*?<\/a>/g) { print $1 }')"
 
