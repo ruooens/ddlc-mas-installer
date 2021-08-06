@@ -1,8 +1,24 @@
 #!/bin/sh
+if ! { command -v perl && command -v curl && command -v sed && command -v unzip >/dev/null; }; then
+    cat >&2 <<EOF
+Error: this script requires the following commands to be available at PATH:
+    
+    * perl
+    * curl
+    * sed
+    * unzip
+    
+Please resolve the abovementioned dependencies and start this script again:
+
+    $0 $@
+EOF
+    exit 2
+fi
+
 while [ "$#" -gt 0 ]; do
     case "$1" in
         "--help")
-            cat >&2 <<EOF
+            cat <<EOF
 Usage: $0 [options] target
 
 
@@ -92,6 +108,7 @@ EOF
                 cat <<EOF
 Note: this script seems to be running on non-MacOS machine, and you're going to
 download Mac version of DDLC. Perhaps you didn't mean to use --mac flag?
+
 EOF
             fi
             ;;
@@ -104,7 +121,7 @@ EOF
         unset _target
     fi
 
-    printf "%s\n" "Downloading and unpacking DDLC..."
+    printf "%s\n" "- Downloading and unpacking DDLC..."
     set -e
     id="$(curl -sL "$(curl -sL -H "Content-Type: application/x-www-form-urlencoded" -d "" https://teamsalvato.itch.io/ddlc/download_url | perl -lne 'if (/"url":"(.+?)"/) { $u = $1; $u =~ s/\\\//\//g; print $u }')" | perl -lne '$in = join("", <STDIN>); while ($in =~ /<a[^\/]*data-upload_id="(.+?)".*?<\/a>/g) { print $1 }')"
 
