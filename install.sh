@@ -1,5 +1,5 @@
 #!/bin/sh
-if ! { command -v perl && command -v curl && command -v sed && command -v unzip >/dev/null; }; then
+if ! { command -v perl && command -v curl && command -v sed && command -v unzip; } >/dev/null; then
     cat >&2 <<EOF
 Error: this script requires the following commands to be available at PATH:
     
