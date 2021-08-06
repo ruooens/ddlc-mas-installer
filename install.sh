@@ -59,7 +59,7 @@ if [ -z "$modonly" ]; then
 
   It is highly recommended that you retrieve a copy of DDLC by the
   link above, install it and complete it (if you still haven't), then
-  (and only then) run this script with --skip-ddlc flag:
+  (and only then) run this script with --mod-only flag:
 
     $0 --mod-only target
 
